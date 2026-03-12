@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Widget Demo</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      height: 150vh; /* make it scrollable to test fixed position */
+      background-color: #f0f2f5;
+    }
+    h1 { margin-top: 50px; }
+  </style>
+  <script src="./dist/widget-app.js"></script>
+</head>
+<body>
+  <h1>Welcome to Example Website!</h1>
+  <p>The chat widget should appear in the bottom right corner.</p>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Initialize the widget
+      window.AlapaiWidget.init({
+        clientId: 'demo-client-99'
+      });
+    });
+  </script>
+</body>
+</html>
