@@ -23,14 +23,12 @@
     <h1>Welcome to Dev Website!</h1>
     <p>The chat widget should appear in the bottom right corner.</p>
 
-    <!-- Load widget source directly -->
-    <script type="module" src="/src/index.tsx"></script>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        window.AlapaiWidget.init({
-          clientId: "dev-client-01",
-        });
+    <!-- Load and initialize widget -->
+    <script type="module">
+      import "/src/index.tsx";
+      
+      window.AlapaiWidget.init({
+        clientId: "20cb9cd2-5b65-4e9e-9852-f0555d257fc3",
       });
     </script>
   </body>

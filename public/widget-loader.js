@@ -36,7 +36,8 @@
   function loadWidget() {
     var script = document.createElement("script");
 
-    script.src = "https://chat.alapai.app/widget-app.js";
+    script.src =
+      "https://alap-prod.sgp1.cdn.digitaloceanspaces.com/chat/widget-app.js";
     script.async = true;
     script.type = "text/javascript";
 

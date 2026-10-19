@@ -163,14 +163,15 @@
 
 /* Message Input */
 .alapai-message-input {
-  padding: 16px;
+  padding: 16px 16px 5px 16px;
   background-color: white;
   border-top: 1px solid var(--border-color);
   display: flex;
+  align-items: flex-end;   /* keep send btn pinned to bottom as textarea grows */
   gap: 8px;
 }
 
-.alapai-message-input input {
+.alapai-message-input textarea {
   flex: 1;
   padding: 10px 14px;
   border: 1px solid var(--border-color);
@@ -179,9 +180,16 @@
   outline: none;
   transition: border-color 0.2s;
   font-family: inherit;
+  resize: none;          /* hide the drag handle */
+  overflow-y: hidden;    /* hidden by default; JS enables when content exceeds max-height */
+  min-height: 40px;      /* same as current single-line height */
+  max-height: 120px;     /* ~4 lines before internal scroll kicks in */
+  line-height: 1.4;
+  box-sizing: border-box;
+  display: block;
 }
 
-.alapai-message-input input:focus {
+.alapai-message-input textarea:focus {
   border-color: var(--primary-color);
 }
 
@@ -221,17 +229,261 @@
     right: 16px;
   }
 
-  .alapai-chat-window {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
-    z-index: 1000000;
-  }
-
   .alapai-chat-window.open {
     transform: none;
   }
+}
+
+/* ─── Connection Status ──────────────────────────────── */
+.alapai-chat-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.alapai-chat-title {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.alapai-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.alapai-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.alapai-status.status-connected .alapai-status-dot { background-color: #4ade80; }
+.alapai-status.status-connecting .alapai-status-dot {
+  background-color: #fbbf24;
+  animation: alapai-pulse 1.2s ease-in-out infinite;
+}
+.alapai-status.status-error .alapai-status-dot,
+.alapai-status.status-disconnected .alapai-status-dot { background-color: #f87171; }
+
+@keyframes alapai-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ─── Input Area Wrapper ─────────────────────────────── */
+.alapai-input-area {
+  background-color: white;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Image URL add row */
+.alapai-image-url-row {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px 0;
+}
+
+.alapai-image-url-row input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 12px;
+  outline: none;
+  font-family: inherit;
+}
+
+.alapai-image-url-row input:focus {
+  border-color: var(--primary-color);
+}
+
+.alapai-add-image-btn {
+  padding: 6px 12px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.alapai-add-image-btn:disabled {
+  background-color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* Attachment tags */
+.alapai-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 12px 0;
+}
+
+.alapai-attachment-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: var(--primary-color);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+.alapai-attachment-tag button {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+}
+
+/* Attach button */
+.alapai-attach-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2px;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.alapai-attach-btn:hover {
+  color: var(--primary-color);
+}
+
+.alapai-attach-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.alapai-attach-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* ─── Message Images ─────────────────────────────────── */
+.alapai-message-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.alapai-message-img {
+  width: 100px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+/* ─── Empty State ────────────────────────────────────── */
+.alapai-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 10px;
+  color: var(--text-muted);
+  padding: 20px;
+  text-align: center;
+}
+
+.alapai-empty-state svg {
+  width: 36px;
+  height: 36px;
+  fill: var(--border-color);
+}
+
+.alapai-empty-state p {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* ─── Typing Indicator ───────────────────────────────── */
+.alapai-typing-bubble {
+  display: flex !important;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 16px !important;
+  min-height: unset;
+}
+
+.alapai-typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+  animation: alapai-typing-bounce 1.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.alapai-typing-dot:nth-child(1) { animation-delay: 0s; }
+.alapai-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.alapai-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes alapai-typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30%            { transform: translateY(-6px); opacity: 1; }
+}
+
+/* ─── File Attachment Previews ───────────────────────── */
+.alapai-attachment-preview {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.alapai-attachment-thumb {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid var(--primary-color);
+  display: block;
+}
+
+.alapai-attachment-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.alapai-attachment-remove:hover {
+  background-color: #dc2626;
 }
