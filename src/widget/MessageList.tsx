@@ -10,9 +10,11 @@ export interface Message {
 interface MessageListProps {
   messages: Message[];
   isTyping: boolean;
+  /** The owner's opening line — drawn locally, never sent to the server. */
+  greeting?: string;
 }
 
-export const MessageList: React.FC<MessageListProps> = ({ messages, isTyping }) => {
+export const MessageList: React.FC<MessageListProps> = ({ messages, isTyping, greeting }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,7 +25,13 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, isTyping }) 
 
   return (
     <div className="alapai-message-list" ref={containerRef}>
-      {messages.length === 0 && !isTyping && (
+      {greeting && (
+        <div className="alapai-message agent">
+          <span>{greeting}</span>
+        </div>
+      )}
+
+      {!greeting && messages.length === 0 && !isTyping && (
         <div className="alapai-empty-state">
           <svg viewBox="0 0 24 24">
             <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" />

@@ -9,7 +9,9 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.tsx'),
       name: 'AlapaiWidget',
-      fileName: () => 'widget-app.js',
+      // v2: the old loader (cached on customers' pages) keeps loading
+      // widget-app.js, which must stay the old bundle until it ages out.
+      fileName: () => 'widget-app-v2.js',
       formats: ['iife'],
     },
     rollupOptions: {

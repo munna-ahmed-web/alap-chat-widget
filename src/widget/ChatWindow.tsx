@@ -7,6 +7,8 @@ import type { ConnectionStatus } from "../hooks/useWebSocket";
 interface ChatWindowProps {
   isOpen: boolean;
   onClose: () => void;
+  title: string;
+  greeting: string;
   messages: Message[];
   onSendMessage: (text: string, images?: string[]) => void;
   status: ConnectionStatus;
@@ -16,6 +18,8 @@ interface ChatWindowProps {
 export const ChatWindow: React.FC<ChatWindowProps> = ({
   isOpen,
   onClose,
+  title,
+  greeting,
   messages,
   onSendMessage,
   status,
@@ -25,7 +29,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     <div className={`alapai-chat-window ${isOpen ? "open" : ""}`}>
       <div className="alapai-chat-header">
         <div className="alapai-chat-header-info">
-          <span className="alapai-chat-title">Chat Support</span>
+          <span className="alapai-chat-title">{title}</span>
           <ConnectionStatusIndicator status={status} />
         </div>
         <button onClick={onClose} aria-label="Close Chat">
@@ -34,7 +38,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           </svg>
         </button>
       </div>
-      <MessageList messages={messages} isTyping={isTyping} />
+      <MessageList messages={messages} isTyping={isTyping} greeting={greeting} />
       <MessageInput onSend={onSendMessage} status={status} />
     </div>
   );

@@ -13,19 +13,19 @@
     }
     h1 { margin-top: 50px; }
   </style>
-  <script src="./dist/widget-app.js"></script>
+  <!-- Exactly what a customer pastes, pointed at the local build. -->
+  <script src="./dist/widget-loader.js" data-client-id="20cb9cd2-5b65-4e9e-9852-f0555d257fc3" async></script>
 </head>
 <body>
   <h1>Welcome to Example Website!</h1>
-  <p>The chat widget should appear in the bottom right corner.</p>
-  
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Initialize the widget
-      window.AlapaiWidget.init({
-        clientId: '1258d5e9-b1ce-44ab-8196-41f750aca851'
-      });
-    });
-  </script>
+  <p>The chat widget appears as configured in the dashboard (Integrations → widget → Appearance).</p>
+  <p>
+    <button onclick="AlapaiWidget('hide')">hide</button>
+    <button onclick="AlapaiWidget('show')">show</button>
+    <button onclick="AlapaiWidget('open')">open</button>
+    <button onclick="AlapaiWidget('close')">close</button>
+    <button onclick="history.pushState({}, '', '/admin')">go to /admin (SPA)</button>
+    <button onclick="history.back()">back</button>
+  </p>
 </body>
 </html>
