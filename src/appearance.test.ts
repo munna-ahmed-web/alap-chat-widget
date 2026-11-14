@@ -16,6 +16,11 @@ describe('normalizeAppearance', () => {
         title: 'Dhaka Market',
         greeting: 'Hi!',
         position: 'left',
+        vertical_position: 'top',
+        offset_x: 40,
+        offset_y: 120,
+        launcher_shape: 'rounded',
+        window_radius: 4,
         hidden_paths: ['/admin', '/account/*'],
       }),
     ).toEqual({
@@ -25,8 +30,39 @@ describe('normalizeAppearance', () => {
       title: 'Dhaka Market',
       greeting: 'Hi!',
       position: 'left',
+      vertical_position: 'top',
+      offset_x: 40,
+      offset_y: 120,
+      launcher_shape: 'rounded',
+      window_radius: 4,
       hidden_paths: ['/admin', '/account/*'],
     });
+  });
+
+  it('keeps the old look for a config from before placement and shape existed', () => {
+    const old = normalizeAppearance({ title: 'Shop', position: 'right' });
+    expect(old.vertical_position).toBe('bottom');
+    expect([old.offset_x, old.offset_y]).toEqual([24, 24]);
+    expect(old.launcher_shape).toBe('circle');
+    expect(old.window_radius).toBe(16);
+  });
+
+  it('clamps offsets and radius and ignores junk', () => {
+    const wild = normalizeAppearance({
+      vertical_position: 'left',
+      offset_x: 99999,
+      offset_y: -5,
+      launcher_shape: 'star',
+      window_radius: 'big',
+    });
+    expect(wild.vertical_position).toBe('bottom');
+    expect(wild.offset_x).toBe(300);
+    expect(wild.offset_y).toBe(0);
+    expect(wild.launcher_shape).toBe('circle');
+    expect(wild.window_radius).toBe(16);
+    expect(normalizeAppearance({ window_radius: 99 }).window_radius).toBe(28);
+    expect(normalizeAppearance({ offset_x: NaN }).offset_x).toBe(24);
+    expect(normalizeAppearance({ offset_x: 10.6 }).offset_x).toBe(11);
   });
 
   it('fills every gap with the defaults', () => {

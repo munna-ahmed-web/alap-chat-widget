@@ -26,8 +26,10 @@
 
 .alapai-widget-container {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  /* Distances come from the owner's settings (layout.ts); 24px is the
+     long-standing default. */
+  bottom: var(--alapai-y, 24px);
+  right: var(--alapai-x, 24px);
   z-index: 999999;
   display: flex;
   flex-direction: column;
@@ -41,7 +43,7 @@
 
 .alapai-widget-container.pos-left {
   right: auto;
-  left: 24px;
+  left: var(--alapai-x, 24px);
   align-items: flex-start;
 }
 
@@ -49,11 +51,69 @@
   transform-origin: bottom left;
 }
 
+/* Top anchor: launcher stays at the top edge, the window opens below it. */
+.alapai-widget-container.v-top {
+  bottom: auto;
+  top: var(--alapai-y, 24px);
+  flex-direction: column-reverse;
+}
+
+.alapai-widget-container.v-top .alapai-chat-button {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.alapai-widget-container.v-top .alapai-chat-window {
+  transform: translateY(-20px) scale(0.95);
+  transform-origin: top right;
+}
+
+.alapai-widget-container.v-top.pos-left .alapai-chat-window {
+  transform-origin: top left;
+}
+
+/* Middle anchor: launcher centred on the side edge, the window opens beside
+   it toward the page. Offset-y does not apply. */
+.alapai-widget-container.v-middle {
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  flex-direction: row;
+  align-items: center;
+}
+
+.alapai-widget-container.v-middle.pos-left {
+  flex-direction: row-reverse;
+}
+
+.alapai-widget-container.v-middle .alapai-chat-button {
+  margin: 0 0 0 16px;
+}
+
+.alapai-widget-container.v-middle.pos-left .alapai-chat-button {
+  margin: 0 16px 0 0;
+}
+
+.alapai-widget-container.v-middle .alapai-chat-window {
+  transform: translateX(20px) scale(0.95);
+  transform-origin: center right;
+}
+
+.alapai-widget-container.v-middle.pos-left .alapai-chat-window {
+  transform: translateX(-20px) scale(0.95);
+  transform-origin: center left;
+}
+
+/* The open state must win over every anchor's closed-state transform. */
+.alapai-widget-container[class] .alapai-chat-window.open {
+  transform: translate(0, 0) scale(1);
+}
+
 /* Chat Button */
 .alapai-chat-button {
   width: 60px;
   height: 60px;
-  border-radius: 50%;
+  border-radius: var(--alapai-launcher-radius, 50%);
   background-color: var(--primary-color);
   color: var(--on-primary);
   border: none;
@@ -94,7 +154,7 @@
   width: 350px;
   height: 450px;
   background-color: var(--bg-color);
-  border-radius: 16px;
+  border-radius: var(--alapai-window-radius, 16px);
   box-shadow: var(--shadow-xl);
   display: flex;
   flex-direction: column;
@@ -163,7 +223,7 @@
 .alapai-message {
   max-width: 80%;
   padding: 10px 14px;
-  border-radius: 12px;
+  border-radius: min(12px, var(--alapai-window-radius, 16px));
   font-size: 14px;
   line-height: 1.4;
   word-break: break-word;
@@ -198,7 +258,7 @@
   flex: 1;
   padding: 10px 14px;
   border: 1px solid var(--border-color);
-  border-radius: 20px;
+  border-radius: min(20px, var(--alapai-window-radius, 16px));
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s;
@@ -247,21 +307,57 @@
 
 /* Responsive */
 @media (max-width: 480px) {
+  /* Phones: keep the widget close to the edge (offset trimmed by 8px, side
+     capped at 16px) and never beside-the-launcher — a 350px window does not
+     fit next to it, so 'middle' falls back to the bottom edge. */
   .alapai-widget-container {
-    bottom: 16px;
-    right: 16px;
+    bottom: max(0px, calc(var(--alapai-y, 24px) - 8px));
+    right: min(var(--alapai-x, 24px), 16px);
   }
 
   .alapai-widget-container.pos-left {
     right: auto;
-    left: 16px;
+    left: min(var(--alapai-x, 24px), 16px);
+  }
+
+  .alapai-widget-container.v-top {
+    bottom: auto;
+    top: max(0px, calc(var(--alapai-y, 24px) - 8px));
+  }
+
+  .alapai-widget-container.v-middle,
+  .alapai-widget-container.v-middle.pos-left {
+    top: auto;
+    bottom: max(0px, calc(var(--alapai-y, 24px) - 8px));
+    transform: none;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .alapai-widget-container.v-middle.pos-left {
+    align-items: flex-start;
+  }
+
+  .alapai-widget-container.v-middle .alapai-chat-button,
+  .alapai-widget-container.v-middle.pos-left .alapai-chat-button {
+    margin: 16px 0 0;
+  }
+
+  .alapai-widget-container.v-middle .alapai-chat-window {
+    transform: translateY(20px) scale(0.95);
+    transform-origin: bottom right;
+  }
+
+  .alapai-widget-container.v-middle.pos-left .alapai-chat-window {
+    transform: translateY(20px) scale(0.95);
+    transform-origin: bottom left;
   }
 
   .alapai-chat-window {
     max-width: calc(100vw - 32px);
   }
 
-  .alapai-chat-window.open {
+  .alapai-widget-container[class] .alapai-chat-window.open {
     transform: none;
   }
 }

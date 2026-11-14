@@ -6,6 +6,8 @@ import { DEFAULT_COLOR, isHexColor } from './theme';
 
 export type LauncherIcon = 'chat' | 'message' | 'headset' | 'sparkle' | 'image';
 export type WidgetPosition = 'right' | 'left';
+export type VerticalPosition = 'top' | 'middle' | 'bottom';
+export type LauncherShape = 'circle' | 'rounded' | 'square';
 
 export interface WidgetAppearance {
   primary_color: string;
@@ -15,8 +17,20 @@ export interface WidgetAppearance {
   title: string;
   greeting: string;
   position: WidgetPosition;
+  /** Vertical anchor; 'middle' centres the launcher on the screen edge. */
+  vertical_position: VerticalPosition;
+  /** px from the side edge / the top-or-bottom edge (y is unused for 'middle'). */
+  offset_x: number;
+  offset_y: number;
+  launcher_shape: LauncherShape;
+  /** Chat window corner radius, px. */
+  window_radius: number;
   hidden_paths: string[];
 }
+
+export const MAX_OFFSET_X = 300;
+export const MAX_OFFSET_Y = 600;
+export const MAX_WINDOW_RADIUS = 28;
 
 export const DEFAULT_APPEARANCE: WidgetAppearance = {
   primary_color: DEFAULT_COLOR,
@@ -25,6 +39,11 @@ export const DEFAULT_APPEARANCE: WidgetAppearance = {
   title: 'Chat Support',
   greeting: '',
   position: 'right',
+  vertical_position: 'bottom',
+  offset_x: 24,
+  offset_y: 24,
+  launcher_shape: 'circle',
+  window_radius: 16,
   hidden_paths: [],
 };
 
@@ -32,6 +51,12 @@ const PRESET_ICONS: readonly string[] = ['chat', 'message', 'headset', 'sparkle'
 
 const text = (value: unknown): string =>
   typeof value === 'string' ? value.trim() : '';
+
+/** A whole number within 0..max, else the fallback (never NaN, never huge). */
+const boundedInt = (value: unknown, max: number, fallback: number): number =>
+  typeof value === 'number' && Number.isFinite(value)
+    ? Math.min(max, Math.max(0, Math.round(value)))
+    : fallback;
 
 /** Anything the server sent, cut down to a safe, complete appearance. */
 export const normalizeAppearance = (raw: unknown): WidgetAppearance => {
@@ -51,6 +76,21 @@ export const normalizeAppearance = (raw: unknown): WidgetAppearance => {
     title: text(data.title) || DEFAULT_APPEARANCE.title,
     greeting: text(data.greeting),
     position: data.position === 'left' ? 'left' : 'right',
+    vertical_position:
+      data.vertical_position === 'top' || data.vertical_position === 'middle'
+        ? data.vertical_position
+        : 'bottom',
+    offset_x: boundedInt(data.offset_x, MAX_OFFSET_X, DEFAULT_APPEARANCE.offset_x),
+    offset_y: boundedInt(data.offset_y, MAX_OFFSET_Y, DEFAULT_APPEARANCE.offset_y),
+    launcher_shape:
+      data.launcher_shape === 'rounded' || data.launcher_shape === 'square'
+        ? data.launcher_shape
+        : 'circle',
+    window_radius: boundedInt(
+      data.window_radius,
+      MAX_WINDOW_RADIUS,
+      DEFAULT_APPEARANCE.window_radius,
+    ),
     hidden_paths: Array.isArray(data.hidden_paths)
       ? data.hidden_paths.filter((p): p is string => typeof p === 'string')
       : [],

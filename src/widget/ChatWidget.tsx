@@ -6,6 +6,7 @@ import { onNavigate } from '../navigation';
 import { isPathHidden } from '../paths';
 import { widgetStore } from '../store';
 import type { WidgetAppearance } from '../appearance';
+import { layoutClasses, layoutVars } from '../layout';
 import type { AlapaiWidgetConfig } from '../global';
 
 interface ChatWidgetProps {
@@ -29,8 +30,8 @@ const ChatSession: React.FC<ChatSessionProps> = ({
 
   return (
     <div
-      className={`alapai-widget-container pos-${appearance.position}`}
-      style={hidden ? { display: 'none' } : undefined}
+      className={`alapai-widget-container ${layoutClasses(appearance)}`}
+      style={{ ...layoutVars(appearance), ...(hidden ? { display: 'none' } : null) }}
     >
       <ChatWindow
         isOpen={isOpen}
